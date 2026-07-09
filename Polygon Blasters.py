@@ -1,16 +1,31 @@
 import pygame as pg
+import os
+import sys
 import math
 import random
 
 #initialize pygame
 pg.init()
 
+#A little function ChatGPT suggested
+def resource_path(relative_path):
+    """
+    Returns the correct path to bundled resources when running as a PyInstaller executable,
+    and the normal path when running from Python.
+    """
+    try:
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 #Make the screen
 SCREEN_WIDTH = 650
 SCREEN_HEIGHT = 800
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pg.display.set_caption("Polygon Blasters")
-pg.display.set_icon(pg.transform.scale_by(pg.image.load("img/player.png").convert_alpha(), 0.5))
+pg.display.set_icon(pg.transform.scale_by(pg.image.load(resource_path("img/icon.ico")).convert_alpha(), 0.5))
 
 #Manage Framerate
 clock = pg.time.Clock()
@@ -28,13 +43,13 @@ def draw_text(text, font_size, color, x, y, font_type=None, antialias=True, alph
     screen.blit(img, rect)
 
 #a bunch of sfx
-death_sound = pg.mixer.Sound("sfx/player_death.wav")
-unfocused_player_shot = pg.mixer.Sound("sfx/player_shot-unfocused.wav")
-focused_player_shot = pg.mixer.Sound("sfx/player_shot-focused.wav")
-enemy_shot = pg.mixer.Sound("sfx/enemy_shot2.wav")
-enemy_hit = pg.mixer.Sound("sfx/enemy_hit.wav")
-graze_sfx = pg.mixer.Sound("sfx/graze_sfx.wav")
-life_gained = pg.mixer.Sound("sfx/life_gained.wav")
+death_sound = pg.mixer.Sound(resource_path("sfx/player_death.wav"))
+unfocused_player_shot = pg.mixer.Sound(resource_path("sfx/player_shot-unfocused.wav"))
+focused_player_shot = pg.mixer.Sound(resource_path("sfx/player_shot-focused.wav"))
+enemy_shot = pg.mixer.Sound(resource_path("sfx/enemy_shot2.wav"))
+enemy_hit = pg.mixer.Sound(resource_path("sfx/enemy_hit.wav"))
+graze_sfx = pg.mixer.Sound(resource_path("sfx/graze_sfx.wav"))
+life_gained = pg.mixer.Sound(resource_path("sfx/life_gained.wav"))
 
 class Shape:
     """
@@ -70,7 +85,7 @@ class Player(Shape):
     grazed_bullets = 0
 
     def __init__(self, initial_x, initial_y, starting_lives, graze_radius):
-        Shape.__init__(self, initial_x, initial_y, pg.image.load("img/player.png").convert_alpha(), 10)
+        Shape.__init__(self, initial_x, initial_y, pg.image.load(resource_path("img/player.png")).convert_alpha(), 10)
         self.lives_remaining = starting_lives
         self.bonus_life_quota = 64
         self.is_alive = True
@@ -78,7 +93,7 @@ class Player(Shape):
         self.invulnerable_until = 0
         self.last_shot_at = pg.time.get_ticks()
         self.graze_radius = graze_radius
-        self.invulnerability_particles_img = pg.image.load("img/invulnerability_particles.png").convert_alpha()
+        self.invulnerability_particles_img = pg.image.load(resource_path("img/invulnerability_particles.png")).convert_alpha()
 
     #manage keyboard input
     def check_movement(self, key):
@@ -134,8 +149,8 @@ class Player(Shape):
 
 
 #load the player bullet images
-unfocused_bullet = pg.image.load("img/player_bullet.png").convert_alpha()
-focus_bullet = pg.image.load("img/long_player_bullet.png").convert_alpha()
+unfocused_bullet = pg.image.load(resource_path("img/player_bullet.png")).convert_alpha()
+focus_bullet = pg.image.load(resource_path("img/long_player_bullet.png")).convert_alpha()
 
 class PlayerBullet(Shape):
     def __init__(self, x, y):
@@ -291,7 +306,7 @@ def shoot_spiral(enemy):
 #this describes the enemy archetypes
 enemy_archetypes = {
     "triman": {
-        "design": pg.image.load("img/triman.png").convert_alpha(),
+        "design": pg.image.load(resource_path("img/triman.png")).convert_alpha(),
         "hp": 120,
         "pattern": shoot_line,
         "shot interval": 120,
@@ -301,7 +316,7 @@ enemy_archetypes = {
         "reward":1
     },
     "tetraman": {
-        "design": pg.image.load("img/tetraman.png").convert_alpha(),
+        "design": pg.image.load(resource_path("img/tetraman.png")).convert_alpha(),
         "hp": 250,
         "pattern": shoot_arch,
         "shot interval": 125,
@@ -311,7 +326,7 @@ enemy_archetypes = {
         "reward":1
     },
     "pentess": {
-        "design": pg.image.load("img/pentess.png").convert_alpha(),
+        "design": pg.image.load(resource_path("img/pentess.png")).convert_alpha(),
         "hp": 500,
         "pattern": shoot_pyramid,
         "shot interval": 100,
@@ -321,7 +336,7 @@ enemy_archetypes = {
         "reward":3
     },
     "hexman": {
-        "design": pg.image.load("img/hexman.png").convert_alpha(),
+        "design": pg.image.load(resource_path("img/hexman.png")).convert_alpha(),
         "hp": 2400,
         "pattern": shoot_spiral,
         "shot interval": 75,
@@ -403,10 +418,10 @@ class Henchman(Enemy):
 
 #this helps with defining the types of bullets
 bullet_types = {
-    "red orb": {"hitbox": 13, "design": pg.image.load("img/red orb.png").convert_alpha()},
-    "green orb": {"hitbox": 13, "design": pg.image.load("img/green orb.png").convert_alpha()},
-    "big orb": {"hitbox": 18, "design": pg.image.load("img/big orb.png").convert_alpha()},
-    "yellow rice": {"hitbox": 9, "design": pg.image.load("img/yellow rice.png").convert_alpha()}
+    "red orb": {"hitbox": 13, "design": pg.image.load(resource_path("img/red orb.png")).convert_alpha()},
+    "green orb": {"hitbox": 13, "design": pg.image.load(resource_path("img/green orb.png")).convert_alpha()},
+    "big orb": {"hitbox": 18, "design": pg.image.load(resource_path("img/big orb.png")).convert_alpha()},
+    "yellow rice": {"hitbox": 9, "design": pg.image.load(resource_path("img/yellow rice.png")).convert_alpha()}
 }
 
 class Bullet(Shape):
@@ -420,7 +435,7 @@ class Bullet(Shape):
         self.vy = vy
 
 
-points_img = pg.image.load("img/point particle.png").convert_alpha()
+points_img = pg.image.load(resource_path("img/point particle.png")).convert_alpha()
 class PointParticles(Shape):
     def __init__(self, x, y):
         Shape.__init__(self, x, y, points_img, 32)
